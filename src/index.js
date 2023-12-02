@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import Signin from "./pages/Signin";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ProductList from "./pages/ProductList";
+import CustomerList from "./pages/CustomerList";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +17,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <CustomerList />,
   },
   {
     path: "/signin",

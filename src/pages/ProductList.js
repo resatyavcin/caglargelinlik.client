@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { Table, Button, Select, Flex, Typography, Segmented, Spin } from "antd";
+import { Table, Button, Select, Flex, Typography, Segmented } from "antd";
 import { useQuery } from "react-query";
 import { getProduct, getProductNames } from "../api.js";
-import ProductAvailableDrawer from "../Components/ProductAvailableDrawer.js";
-import ProductAddModel from "../Components/ProductAddModel.js";
+import ProductAvailableDrawer from "../components/ProductAvailableDrawer.js";
+import ProductAddModel from "../components/ProductAddModel.js";
 import MainCore from "../MainCore.js";
 import { columns } from "./columns/productColumn.js";
 

@@ -21,7 +21,7 @@ const MainCore = ({ children }) => {
           <Typography.Text strong>E-DEFTER</Typography.Text>
 
           <Flex gap={10}>
-            <Link to={"/"}>Müşteri Sayfası</Link>
+            <Link to={"/"}>Müşteri Listesi</Link>
             <Link to={"/product-list"}> Ürün Listesi</Link>
           </Flex>
 

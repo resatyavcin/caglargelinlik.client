@@ -1,13 +1,27 @@
 import { Button, Form, AutoComplete, Alert, Checkbox } from "antd";
 
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { createProduct } from "../api.js";
 
-const ProductAdd = () => {
-  const { isError, isLoading, data } = useQuery("productNames");
+const ProductAdd = ({ productCode, onCancel }) => {
+  const { data } = useQuery("productNames");
 
-  console.log(data);
+  const {
+    isError: isErrorCreateProduct,
+    isLoading: isLoadingCreateProduct,
+    mutateAsync,
+    error: errorCreateProduct,
+  } = useMutation("createProduct", (props) => createProduct(props));
 
-  const onFinish = async (values) => {};
+  const queryClient = new useQueryClient();
+
+  const onFinish = async (values) => {
+    await mutateAsync({ ...values, code: productCode });
+
+    onCancel();
+    queryClient.refetchQueries(["products"]);
+  };
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
@@ -18,11 +32,11 @@ const ProductAdd = () => {
 
   return (
     <div style={{ marginTop: 30 }}>
-      {isError && (
+      {isErrorCreateProduct && (
         <Alert
           style={{ marginBottom: 30 }}
           message="Hata"
-          //   description={error.response.data.message}
+          description={errorCreateProduct.response.data.message}
           type="error"
           showIcon
         />
@@ -37,27 +51,32 @@ const ProductAdd = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="Kullanıcı"
-          name="username"
+          label="Ürün İsmi"
+          name="name"
           rules={[
             {
               required: true,
-              message: "Kullanıcı adını giriniz.",
+              message: "Zorunlu alan.",
             },
           ]}
         >
           <AutoComplete
             style={{ width: 200 }}
             onSelect={onSelect}
-            options={data}
-            // onSearch={(text) => data.forEach((item) => item?.startsWith(text))}
-            placeholder="input here"
+            options={data.map((value) => ({ value }))}
+            filterOption={(inputValue, option) =>
+              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+            placeholder="Ürün ismini giriniz."
           />
         </Form.Item>
 
         <Form.Item
           label="İkinci El ise işaretleyiniz"
           name="isSecondHand"
+          initialValue={true}
+          valuePropName="checked"
           rules={[
             {
               required: true,
@@ -69,7 +88,12 @@ const ProductAdd = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block loading={isLoading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            loading={isLoadingCreateProduct}
+          >
             Ürünü Ekle
           </Button>
         </Form.Item>

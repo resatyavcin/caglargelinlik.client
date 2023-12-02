@@ -20,4 +20,16 @@ const getProductNames = async ({ type }) => {
   return response.data.result;
 };
 
-export { getProduct, getProductNames };
+const createProduct = async ({ code, name, isSecondHand }) => {
+  const response = await axios.post(
+    `${API_URL}/v1/product/createProduct`,
+    { code, name, isSecondHand },
+    {
+      withCredentials: true,
+    }
+  );
+
+  return response.data.result;
+};
+
+export { getProduct, getProductNames, createProduct };

@@ -22,7 +22,7 @@ const MainCore = ({ children }) => {
 
           <Flex gap={10}>
             <Link to={"/"}>Müşteri Sayfası</Link>
-            <Link to={"/product-list/WD"}> Ürün Listesi</Link>
+            <Link to={"/product-list"}> Ürün Listesi</Link>
           </Flex>
 
           {

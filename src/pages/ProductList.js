@@ -1,108 +1,22 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  Table,
-  Button,
-  Select,
-  Tag,
-  Checkbox,
-  Typography,
-  Drawer,
-  Space,
-  Calendar,
-  Modal,
-} from "antd";
+import { Table, Button, Select, Flex, Typography, Segmented, Spin } from "antd";
 import { useQuery } from "react-query";
 import { getProduct, getProductNames } from "../api.js";
-import { CalendarTwoTone } from "@ant-design/icons";
-import ProductAdd from "../forms/ProductAdd.js";
 import ProductAvailableDrawer from "../Components/ProductAvailableDrawer.js";
 import ProductAddModel from "../Components/ProductAddModel.js";
 import MainCore from "../MainCore.js";
-
-const columns = (showCalendarDrawer) => [
-  {
-    key: 1,
-    title: "Ürün Adı",
-    dataIndex: "name",
-  },
-  {
-    key: 2,
-    title: "Ürün Kullanımı",
-    dataIndex: "isSecondHand",
-    render: (_, { isSecondHand }) => (
-      <>
-        <Tag color={isSecondHand ? "orange" : "green"}>
-          {isSecondHand ? "İkinci El" : "Sıfır"}
-        </Tag>
-      </>
-    ),
-  },
-  {
-    key: 3,
-    title: "Ürün Aktifliği",
-    dataIndex: "isActive",
-    filters: [
-      {
-        text: "Aktif",
-        value: true,
-      },
-      {
-        text: "Aktif Değil",
-        value: false,
-      },
-    ],
-
-    onFilter: (value, record) => record.isActive === value,
-    render: (_, { isActive, isSold }) => (
-      <>
-        {!isSold ? (
-          <Checkbox disabled defaultChecked={isActive}>
-            <Typography.Text strong type={!isActive ? "warning" : "secondary"}>
-              {!isActive ? "Kiralandı" : "Depoda"}{" "}
-            </Typography.Text>
-          </Checkbox>
-        ) : (
-          <Typography.Text strong type="danger">
-            Satıldı
-          </Typography.Text>
-        )}
-      </>
-    ),
-  },
-  {
-    key: 4,
-    title: "Ürün Müsaitliği",
-    dataIndex: "calendar",
-    render: (_, { isSold }) => (
-      <>
-        {!isSold && (
-          <Button
-            type="text"
-            icon={<CalendarTwoTone />}
-            size={"middle"}
-            onClick={showCalendarDrawer}
-          />
-        )}
-      </>
-    ),
-  },
-];
+import { columns } from "./columns/productColumn.js";
 
 const ProductList = () => {
-  var currentUrl = window.location.href;
-
-  var urlParts = currentUrl.split("/");
-
-  var paramValue = urlParts[urlParts.length - 1];
+  const [productCode, setProductCode] = useState("WD");
 
   const {
     data: productNameSelectData,
     isLoading: productNameSelectIsLoading,
-    isFetched: productNameSelectIsFetched,
-    isSuccess: productNameSelectIsSuccess,
+    refetch: productNameSelectRefetch,
   } = useQuery("productNames", () => {
-    return getProductNames({ type: paramValue.toUpperCase() });
+    return getProductNames({ type: productCode });
   });
 
   const [selectedProduct, setSelectedProduct] = useState();
@@ -111,24 +25,28 @@ const ProductList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, refetch } = useQuery(
-    ["fetchData", { selectedProduct }],
+    ["products", { selectedProduct }],
     ({ queryKey }) => {
       return getProduct({
-        type: paramValue.toUpperCase(),
-        perPage: 5,
-        currentPage: 1,
-        productName: queryKey[1].selectedProduct,
+        type: productCode,
+        productName: queryKey[1]?.selectedProduct,
       });
     }
   );
 
   useEffect(() => {
     setSelectedProduct(productNameSelectData?.[0]);
-  }, [productNameSelectData]);
+  }, [productNameSelectData, productCode]);
+
+  useEffect(() => {
+    refetch();
+    productNameSelectRefetch();
+    setSelectedProduct();
+  }, [productCode, productNameSelectRefetch, refetch]);
 
   const handleChange = async (value) => {
-    setSelectedProduct(value);
     await refetch();
+    setSelectedProduct(value);
   };
 
   const showDrawer = () => {
@@ -147,37 +65,65 @@ const ProductList = () => {
     setIsModalOpen(false);
   };
 
+  const PRODUCT_CODE = Object.freeze({
+    WD: "Gelinlik",
+    HN: "Kınalık",
+    EG: "Nişanlık",
+  });
+
   return (
     <MainCore>
-      <div style={{ marginBottom: 20 }}>
-        {productNameSelectData?.length > 0 && (
-          <Select
-            disabled={!selectedProduct}
-            defaultValue={selectedProduct}
-            style={{ width: 220, marginRight: 10 }}
-            onChange={handleChange}
-            loading={productNameSelectIsLoading}
-            options={productNameSelectData?.forEach((item) => ({
-              label: item,
-              value: item,
-            }))}
-          />
-        )}
+      <Segmented
+        style={{ marginBottom: 20 }}
+        size="large"
+        onChange={async (value) => {
+          setProductCode(
+            Object.keys(PRODUCT_CODE).find(
+              (item) => PRODUCT_CODE[item] === value
+            )
+          );
+        }}
+        options={[PRODUCT_CODE.WD, PRODUCT_CODE.EG, PRODUCT_CODE.HN]}
+        block
+      />
+      <Flex justify="space-between" align="center" style={{ marginBottom: 10 }}>
+        <Typography.Title level={3}>
+          {PRODUCT_CODE[productCode]} Modelleri
+        </Typography.Title>
 
         <Button type="primary" onClick={showModal}>
           Ürün Ekle
         </Button>
-      </div>
+      </Flex>
+
+      {productNameSelectData?.length > 0 && (
+        <Select
+          value={selectedProduct}
+          placeholder={"Model İsmi Seçiniz"}
+          style={{ width: 220, marginRight: 10, marginBottom: 20 }}
+          onChange={handleChange}
+          loading={productNameSelectIsLoading}
+          options={productNameSelectData?.map((item) => ({
+            label: item,
+            value: item,
+          }))}
+        />
+      )}
 
       <Table
         loading={isLoading}
         columns={columns(showDrawer)}
         dataSource={data}
         size="small"
-        pagination={{ defaultPageSize: 2 }}
+        pagination={{ defaultPageSize: 5 }}
+        locale={{ emptyText: "Veri Bulunamadı." }}
       />
 
-      <ProductAddModel isOpen={isModalOpen} closeDrawer={closeModal} />
+      <ProductAddModel
+        isOpen={isModalOpen}
+        closeModel={closeModal}
+        productCode={productCode}
+      />
       <ProductAvailableDrawer isOpen={isOpenDrawer} closeDrawer={closeDrawer} />
     </MainCore>
   );

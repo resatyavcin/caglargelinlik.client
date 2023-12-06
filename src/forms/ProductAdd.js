@@ -17,9 +17,14 @@ const ProductAdd = ({ productCode, onCancel }) => {
 
   const onFinish = async (values) => {
     await mutateAsync({ ...values, code: productCode });
+    await queryClient.refetchQueries({
+      queryKey: ["products"],
+    });
+    await queryClient.refetchQueries({
+      queryKey: ["productNames"],
+    });
 
     onCancel();
-    queryClient.refetchQueries(["products"]);
   };
 
   const onFinishFailed = (errorInfo) => {

@@ -9,6 +9,13 @@ import Signin from "./pages/Signin";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import CustomerList from "./pages/CustomerList";
+import "react-datepicker/dist/react-datepicker.css";
+import { ConfigProvider } from "antd";
+import trTR from "antd/locale/tr_TR";
+
+import "dayjs/locale/tr";
+import dayjs from "dayjs";
+dayjs.locale("tr");
 
 const queryClient = new QueryClient();
 
@@ -32,7 +39,9 @@ const router = createBrowserRouter([
 root.render(
   <QueryClientProvider client={queryClient}>
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <ConfigProvider locale={trTR}>
+        <RouterProvider router={router} />
+      </ConfigProvider>
     </React.StrictMode>
   </QueryClientProvider>
 );

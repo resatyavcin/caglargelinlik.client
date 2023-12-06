@@ -15,6 +15,7 @@ const CustomerAdd = ({ onCancel }) => {
     await mutateAsync({ ...values });
 
     onCancel();
+
     queryClient.refetchQueries(["customers"]);
   };
 

@@ -1,7 +1,7 @@
-import { Button, Tag, Checkbox, Typography } from "antd";
+import { Button, Tag, Typography } from "antd";
 import { CalendarTwoTone } from "@ant-design/icons";
 
-export const columns = (showCalendarDrawer) => [
+export const columns = (navigate, showCalendarDrawer) => [
   {
     key: 1,
     title: "Ürün Adı",
@@ -21,48 +21,33 @@ export const columns = (showCalendarDrawer) => [
   },
   {
     key: 3,
-    title: "Ürün Aktifliği",
+    title: "Ürün Elverişliliği",
     dataIndex: "isActive",
-    filters: [
-      {
-        text: "Aktif",
-        value: true,
-      },
-      {
-        text: "Aktif Değil",
-        value: false,
-      },
-    ],
-
-    onFilter: (value, record) => record.isActive === value,
-    render: (_, { isActive, isSold }) => (
-      <>
-        {!isSold ? (
-          <Checkbox disabled defaultChecked={isActive}>
-            <Typography.Text strong type={!isActive ? "warning" : "secondary"}>
-              {!isActive ? "Kiralandı" : "Depoda"}{" "}
-            </Typography.Text>
-          </Checkbox>
-        ) : (
-          <Typography.Text strong type="danger">
-            Satıldı
+    render: (_, { isSold }) => {
+      return (
+        <>
+          <Typography.Text type={!isSold ? "success" : "danger"}>
+            {!isSold ? "Kiralanabilir" : "Depoda"}
           </Typography.Text>
-        )}
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     key: 4,
-    title: "Ürün Müsaitliği",
+    title: "Detay",
     dataIndex: "calendar",
-    render: (_, { isSold }) => (
+    render: (_, { isSold, _id }) => (
       <>
         {!isSold && (
           <Button
             type="text"
             icon={<CalendarTwoTone />}
             size={"middle"}
-            onClick={showCalendarDrawer}
+            onClick={() => {
+              showCalendarDrawer();
+              navigate(_, { state: _id });
+            }}
           />
         )}
       </>

@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons";
 
-export const columns = (showCalendarDrawer) => [
+export const columns = (navigate, showCalendarDrawer) => [
   {
     key: 1,
     title: "Adı",
@@ -29,12 +29,15 @@ export const columns = (showCalendarDrawer) => [
     key: 5,
     title: "Detay",
     dataIndex: "details",
-    render: () => (
+    render: (_, { _id }) => (
       <Button
         type="text"
         icon={<PaperClipOutlined />}
         size={"middle"}
-        onClick={showCalendarDrawer}
+        onClick={() => {
+          showCalendarDrawer();
+          navigate(_, { state: _id });
+        }}
       />
     ),
   },

@@ -1,38 +1,101 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import { Table, Button, Select, Flex, Typography, Segmented } from "antd";
+import {
+  Table,
+  Button,
+  Select,
+  Flex,
+  Typography,
+  Segmented,
+  Result,
+  Calendar,
+} from "antd";
 import { useQuery } from "react-query";
 import { getProduct, getProductNames } from "../api.js";
 import ProductAvailableDrawer from "../components/ProductAvailableDrawer.js";
 import ProductAddModel from "../components/ProductAddModel.js";
 import MainCore from "../MainCore.js";
 import { columns } from "./columns/productColumn.js";
+import { useNavigate, Link } from "react-router-dom";
+import dayjs from "dayjs";
+
+// Yardımcı fonksiyon
+function getDateRange(startDate, endDate) {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const range = [];
+
+  let currentDate = start;
+  while (currentDate?.isBefore(end) || currentDate?.isSame(end)) {
+    range.push(currentDate?.format("DD-MM-YYYY"));
+    currentDate = currentDate.add(1, "day");
+  }
+
+  return range;
+}
+
+function calculateDateRange(data) {
+  const result = [];
+
+  data?.forEach((item) => {
+    if (item?.isPackage && item?.packageDetails) {
+      const { departureDate, arrivalDate } = item?.packageDetails;
+      result.push(...getDateRange(departureDate, arrivalDate));
+    } else if (!item?.isPackage) {
+      const { productDeliveryDate, productReturnDate } = item;
+      result.push(...getDateRange(productDeliveryDate, productReturnDate));
+    }
+  });
+
+  return result;
+}
+
+function findSameItem(arrays) {
+  const firstSet = new Set(arrays[0]);
+
+  const commonCharacters = [...firstSet].filter((char) =>
+    arrays.every((arr) => new Set(arr).has(char))
+  );
+
+  return commonCharacters;
+}
 
 const ProductList = () => {
   const [productCode, setProductCode] = useState("WD");
+  const [selectedProduct, setSelectedProduct] = useState();
+  const [productNameSelectDataState, setProductNameSelectDataState] = useState(
+    []
+  );
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     data: productNameSelectData,
     isLoading: productNameSelectIsLoading,
     refetch: productNameSelectRefetch,
-  } = useQuery("productNames", () => {
-    return getProductNames({ type: productCode });
-  });
+  } = useQuery(
+    ["productNames"],
+    () => {
+      return getProductNames({ type: productCode });
+    },
+    {
+      onSuccess: (data) => {
+        setProductNameSelectDataState(data);
+      },
+    }
+  );
 
-  const [selectedProduct, setSelectedProduct] = useState();
-
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { data, isLoading, refetch } = useQuery(
+  const { data, isLoading, refetch, isError, error } = useQuery(
     ["products", { selectedProduct }],
     ({ queryKey }) => {
       return getProduct({
         type: productCode,
         productName: queryKey[1]?.selectedProduct,
       });
-    }
+    },
+    { retry: 0, refetchOnWindowFocus: false, cacheTime: 20 }
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSelectedProduct(productNameSelectData?.[0]);
@@ -65,11 +128,32 @@ const ProductList = () => {
     setIsModalOpen(false);
   };
 
+  const commonDateRange = useMemo(() => {
+    const allDatas = data?.map((item) => {
+      return calculateDateRange(item?.rentHistory);
+    });
+
+    return findSameItem(allDatas || []);
+  }, [data]);
+
   const PRODUCT_CODE = Object.freeze({
     WD: "Gelinlik",
     HN: "Kınalık",
     EG: "Nişanlık",
   });
+
+  if (isError) {
+    if (error?.response?.status === (401 || 403)) {
+      return (
+        <Result
+          status="403"
+          title="403"
+          subTitle="Sorry, you are not authorized to access this page."
+          extra={<Link to={"/signin"}> Giriş Yap</Link>}
+        />
+      );
+    }
+  }
 
   return (
     <MainCore>
@@ -96,35 +180,51 @@ const ProductList = () => {
         </Button>
       </Flex>
 
-      {productNameSelectData?.length > 0 && (
+      {productNameSelectDataState?.length > 0 && (
         <Select
           value={selectedProduct}
           placeholder={"Model İsmi Seçiniz"}
           style={{ width: 220, marginRight: 10, marginBottom: 20 }}
           onChange={handleChange}
           loading={productNameSelectIsLoading}
-          options={productNameSelectData?.map((item) => ({
+          options={productNameSelectDataState?.map((item) => ({
             label: item,
             value: item,
           }))}
         />
       )}
 
-      <Table
-        loading={isLoading}
-        columns={columns(showDrawer)}
-        dataSource={data}
-        size="small"
-        pagination={{ defaultPageSize: 5 }}
-        locale={{ emptyText: "Veri Bulunamadı." }}
-      />
+      <Flex gap={25} justify="space-between">
+        <Table
+          style={{ flex: 1 }}
+          loading={isLoading}
+          columns={columns(navigate, showDrawer)}
+          dataSource={data}
+          size="small"
+          pagination={{ defaultPageSize: 5 }}
+        />
+        <Calendar
+          style={{ maxWidth: 250 }}
+          fullscreen={false}
+          disabledDate={(date) => {
+            return commonDateRange.includes(date.format("DD-MM-YYYY"));
+          }}
+        />
+      </Flex>
 
-      <ProductAddModel
-        isOpen={isModalOpen}
-        closeModel={closeModal}
-        productCode={productCode}
-      />
-      <ProductAvailableDrawer isOpen={isOpenDrawer} closeDrawer={closeDrawer} />
+      {isModalOpen && (
+        <ProductAddModel
+          isOpen={isModalOpen}
+          closeModel={closeModal}
+          productCode={productCode}
+        />
+      )}
+      {isOpenDrawer && (
+        <ProductAvailableDrawer
+          isOpen={isOpenDrawer}
+          closeDrawer={closeDrawer}
+        />
+      )}
     </MainCore>
   );
 };

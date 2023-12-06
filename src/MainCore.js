@@ -1,19 +1,10 @@
 import React from "react";
 import { Button, Card, Typography, Flex } from "antd";
 
-import { useMutation } from "react-query";
-import { logout } from "./api.js/index.js";
 import { Link } from "react-router-dom";
+import { logout } from "./api.js";
 
 const MainCore = ({ children }) => {
-  const { mutateAsync } = useMutation("auth", logout, {
-    withCreadential: true,
-  });
-
-  const logoutHandle = async () => {
-    mutateAsync();
-  };
-
   return (
     <div>
       <Card style={{ width: "100%" }}>
@@ -26,12 +17,19 @@ const MainCore = ({ children }) => {
           </Flex>
 
           {
-            <Button size="small" onClick={logoutHandle}>
+            <Button
+              size="small"
+              onClick={async () => {
+                await logout();
+                window.location.reload();
+              }}
+            >
               Çıkış Yap
             </Button>
           }
         </Flex>
       </Card>
+
       <div style={{ margin: 30 }}>{children}</div>
     </div>
   );

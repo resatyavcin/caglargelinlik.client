@@ -7,8 +7,8 @@ import {
   Flex,
   Typography,
   Segmented,
-  Result,
   Calendar,
+  message,
 } from "antd";
 import { useQuery } from "react-query";
 import { getProduct, getProductNames } from "../api.js";
@@ -16,7 +16,7 @@ import ProductAvailableDrawer from "../components/ProductAvailableDrawer.js";
 import ProductAddModel from "../components/ProductAddModel.js";
 import MainCore from "../MainCore.js";
 import { columns } from "./columns/productColumn.js";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 // Yardımcı fonksiyon
@@ -66,6 +66,8 @@ const ProductList = () => {
   const [productNameSelectDataState, setProductNameSelectDataState] = useState(
     []
   );
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -85,7 +87,7 @@ const ProductList = () => {
     }
   );
 
-  const { data, isLoading, refetch, isError, error } = useQuery(
+  const { data, isLoading, refetch } = useQuery(
     ["products", { selectedProduct }],
     ({ queryKey }) => {
       return getProduct({
@@ -142,21 +144,9 @@ const ProductList = () => {
     EG: "Nişanlık",
   });
 
-  if (isError) {
-    if (error?.response?.status === (401 || 403)) {
-      return (
-        <Result
-          status="403"
-          title="403"
-          subTitle="Sorry, you are not authorized to access this page."
-          extra={<Link to={"/signin"}> Giriş Yap</Link>}
-        />
-      );
-    }
-  }
-
   return (
     <MainCore>
+      {contextHolder}
       <Segmented
         style={{ marginBottom: 20 }}
         size="large"
@@ -217,12 +207,14 @@ const ProductList = () => {
           isOpen={isModalOpen}
           closeModel={closeModal}
           productCode={productCode}
+          messageApi={messageApi}
         />
       )}
       {isOpenDrawer && (
         <ProductAvailableDrawer
           isOpen={isOpenDrawer}
           closeDrawer={closeDrawer}
+          messageApi={messageApi}
         />
       )}
     </MainCore>

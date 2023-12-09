@@ -3,14 +3,30 @@ import axios from "axios";
 const API_URL = "http://localhost:8080";
 
 const login = async ({ username, password }) => {
-  const response = await axios.post(`${API_URL}/v1/auth/login`, {
-    username,
-    password,
-  });
+  try {
+    const response = await axios.post(`${API_URL}/v1/auth/login`, {
+      username,
+      password,
+    });
 
-  localStorage.setItem("token", response?.data?.result?.token);
+    localStorage.setItem("token", response?.data?.result?.token);
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const verify = async ({ token }) => {
+  try {
+    const response = await axios.post(`${API_URL}/v1/verify`, {
+      token,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const register = async ({ username, password, admin }) => {
@@ -26,4 +42,4 @@ const logout = async () => {
   localStorage.clear();
 };
 
-export { login, register, logout };
+export { login, register, logout, verify };

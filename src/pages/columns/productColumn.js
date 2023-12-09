@@ -27,7 +27,7 @@ export const columns = (navigate, showCalendarDrawer) => [
       return (
         <>
           <Typography.Text type={!isSold ? "success" : "danger"}>
-            {!isSold ? "Kiralanabilir" : "Depoda"}
+            {!isSold ? "Kiralanabilir" : "Satıldı"}
           </Typography.Text>
         </>
       );
@@ -37,19 +37,17 @@ export const columns = (navigate, showCalendarDrawer) => [
     key: 4,
     title: "Detay",
     dataIndex: "calendar",
-    render: (_, { isSold, _id }) => (
+    render: (_, { _id }) => (
       <>
-        {!isSold && (
-          <Button
-            type="text"
-            icon={<CalendarTwoTone />}
-            size={"middle"}
-            onClick={() => {
-              showCalendarDrawer();
-              navigate(_, { state: _id });
-            }}
-          />
-        )}
+        <Button
+          type="text"
+          icon={<CalendarTwoTone />}
+          size={"middle"}
+          onClick={() => {
+            showCalendarDrawer();
+            navigate(_, { state: _id });
+          }}
+        />
       </>
     ),
   },

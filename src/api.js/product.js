@@ -3,17 +3,21 @@ import axios from "axios";
 const API_URL = "http://localhost:8080";
 
 const getProduct = async ({ type, perPage, currentPage, productName }) => {
-  const response = await axios.get(
-    `${API_URL}/v1/product/getProducts/${type}?perPage=${perPage}&currentPage=${currentPage}&productName=${productName}`,
-    {
-      headers: {
-        "x-auth-token": localStorage.getItem("token"),
-      },
-      withCredentials: true,
-    }
-  );
+  try {
+    const response = await axios.get(
+      `${API_URL}/v1/product/getProducts/${type}?perPage=${perPage}&currentPage=${currentPage}&productName=${productName}`,
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
 
-  return response.data.result;
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const getProductOne = async ({ productId }) => {
@@ -77,6 +81,44 @@ const deleteProduct = async ({ productId }) => {
   }
 };
 
+const receivingProduct = async ({ booking }) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/v1/product/receiving?booking=${booking}`,
+      {},
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response?.data?.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const receivingProductCancel = async ({ booking }) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/v1/product/receiving-cancel?booking=${booking}`,
+      {},
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response?.data?.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const testAPI = async () => {
   const response = await axios.get(`${API_URL}/v1/product/test`, {
     headers: {
@@ -95,4 +137,6 @@ export {
   testAPI,
   getProductOne,
   deleteProduct,
+  receivingProduct,
+  receivingProductCancel,
 };

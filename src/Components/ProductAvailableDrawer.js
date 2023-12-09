@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Button, Drawer, Space, Calendar, Table, Flex, message } from "antd";
-import { deleteProduct, getProductOne } from "../api.js";
+import {
+  deleteProduct,
+  getProductOne,
+  receivingProduct,
+  receivingProductCancel,
+} from "../api.js";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useLocation } from "react-router-dom";
-import { columns } from "../pages/columns/rentHisroryColumn.js";
+import { columns } from "../pages/columns/rentHistoryColumn.js";
 import dayjs from "dayjs";
-
+import AreYouSureModal from "./AreYouSureModal.js";
 const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
+  const [areYouSureDelete, setAreYouSureDelete] = useState(false);
+  const [receiveFn, setReceiveFn] = useState();
+  const [
+    areYouSureReceivingOrReceivingCancel,
+    setAreYouSureReceivingOrReceivingCancel,
+  ] = useState(false);
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
   const queryClient = new useQueryClient();
@@ -16,11 +27,11 @@ const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
     return await getProductOne({ productId: location?.state });
   });
 
-  const { mutateAsync } = useMutation(
+  const { mutateAsync, isLoading: deleteLoading } = useMutation(
     "deleteProduct",
     async (productId) => await deleteProduct({ productId }),
     {
-      onError: (error, variables, context) => {
+      onError: (error) => {
         messageApi.open({
           type: "error",
           content: error?.response?.data?.message,
@@ -42,6 +53,56 @@ const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
           .then(() => {
             closeDrawer();
           });
+      },
+    }
+  );
+
+  const {
+    mutateAsync: receivingProductMutation,
+    isLoading: receivingProductLoading,
+  } = useMutation(
+    "receivingProduct",
+    async (booking) => await receivingProduct({ booking }),
+    {
+      onError: (error) => {
+        messageApi.open({
+          type: "error",
+          content: error?.response?.data?.message,
+        });
+      },
+      onSuccess: async (data) => {
+        await queryClient.refetchQueries({
+          queryKey: ["productOne"],
+        });
+        messageApi.open({
+          type: "success",
+          content: data?.message,
+        });
+      },
+    }
+  );
+
+  const {
+    mutateAsync: receivingProductCancelMutation,
+    isLoading: receivingProductCancelLoading,
+  } = useMutation(
+    "receivingProduct",
+    async (booking) => await receivingProductCancel({ booking }),
+    {
+      onError: (error) => {
+        messageApi.open({
+          type: "error",
+          content: error?.response?.data?.message,
+        });
+      },
+      onSuccess: async (data) => {
+        await queryClient.refetchQueries({
+          queryKey: ["productOne"],
+        });
+        messageApi.open({
+          type: "success",
+          content: data?.message,
+        });
       },
     }
   );
@@ -77,11 +138,28 @@ const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
     return range;
   }
 
+  const handleReturnProductOperationAreYouSureOK = async () => {
+    try {
+      await receiveFn();
+      setAreYouSureReceivingOrReceivingCancel(false);
+    } catch (error) {
+      setAreYouSureReceivingOrReceivingCancel(false);
+    }
+  };
+
+  const handlerReceiveFn = (fn) => {
+    if (!areYouSureReceivingOrReceivingCancel) {
+      setAreYouSureReceivingOrReceivingCancel(true);
+    }
+
+    setReceiveFn(fn);
+  };
+
   return (
     <Drawer
       title="Ürün Müsaitlik Durumu"
       placement={"right"}
-      width={500}
+      width={700}
       onClose={() => {
         closeDrawer();
       }}
@@ -109,24 +187,45 @@ const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
         <div style={{ flex: 1, marginTop: 20 }}>
           <Table
             loading={isLoading}
-            columns={columns}
+            columns={columns({
+              mutation: receivingProductMutation,
+              cancelMutation: receivingProductCancelMutation,
+              handlerReceiveFn,
+            })}
             dataSource={data?.rentHistory}
             size="small"
             pagination={false}
           />
         </div>
+        <AreYouSureModal
+          confirmLoading={deleteLoading}
+          isOpen={areYouSureDelete}
+          closeModel={() => setAreYouSureDelete(false)}
+          handleOk={async () => {
+            try {
+              await mutateAsync(location?.state);
+              setAreYouSureDelete(false);
+            } catch (error) {
+              setAreYouSureDelete(false);
+            }
+          }}
+        />
 
+        <AreYouSureModal
+          confirmLoading={
+            receivingProductLoading || receivingProductCancelLoading
+          }
+          isOpen={areYouSureReceivingOrReceivingCancel}
+          closeModel={() => setAreYouSureReceivingOrReceivingCancel(false)}
+          handleOk={handleReturnProductOperationAreYouSureOK}
+        />
         <Button
           type="text"
           htmlType="submit"
           block
           danger
-          onClick={async () => {
-            try {
-              await mutateAsync(location?.state);
-            } catch (error) {
-              console.log(error);
-            }
+          onClick={() => {
+            setAreYouSureDelete(true);
           }}
         >
           Ürünü Sil

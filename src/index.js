@@ -1,20 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import { QueryClient, QueryClientProvider } from "react-query";
-import Signin from "./pages/Signin";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
+import { ConfigProvider } from "antd";
+import dayjs from "dayjs";
+
 import ProductList from "./pages/ProductList";
 import CustomerList from "./pages/CustomerList";
-import "react-datepicker/dist/react-datepicker.css";
-import { ConfigProvider } from "antd";
-import trTR from "antd/locale/tr_TR";
+import Signin from "./pages/Signin";
 
+import "react-datepicker/dist/react-datepicker.css";
 import "dayjs/locale/tr";
-import dayjs from "dayjs";
+import "./index.css";
+import trTR from "antd/locale/tr_TR";
+import { AuthProvider } from "./AuthProvider";
+import Verify from "./pages/Verify";
+
 dayjs.locale("tr");
 
 const queryClient = new QueryClient();
@@ -31,6 +35,10 @@ const router = createBrowserRouter([
     element: <Signin />,
   },
   {
+    path: "/verify-2fa",
+    element: <Verify />,
+  },
+  {
     path: "/product-list",
     element: <ProductList />,
   },
@@ -39,9 +47,11 @@ const router = createBrowserRouter([
 root.render(
   <QueryClientProvider client={queryClient}>
     <React.StrictMode>
-      <ConfigProvider locale={trTR}>
-        <RouterProvider router={router} />
-      </ConfigProvider>
+      <AuthProvider>
+        <ConfigProvider locale={trTR}>
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </AuthProvider>
     </React.StrictMode>
   </QueryClientProvider>
 );

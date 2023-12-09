@@ -3,7 +3,7 @@ import { Button, Form, AutoComplete, Alert, Checkbox } from "antd";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { createProduct } from "../api.js";
 
-const ProductAdd = ({ productCode, onCancel }) => {
+const ProductAdd = ({ productCode, onCancel, messageApi }) => {
   const { data } = useQuery("productNames");
 
   const {
@@ -11,7 +11,11 @@ const ProductAdd = ({ productCode, onCancel }) => {
     isLoading: isLoadingCreateProduct,
     mutateAsync,
     error: errorCreateProduct,
-  } = useMutation("createProduct", (props) => createProduct(props));
+  } = useMutation("createProduct", (props) => createProduct(props), {
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   const queryClient = new useQueryClient();
 

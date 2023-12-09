@@ -2,24 +2,27 @@ import React from "react";
 import { Button, Form, Input, Alert } from "antd";
 
 import { useMutation } from "react-query";
-import { login } from "../api.js";
+import { verify } from "../api.js";
 import { useNavigate } from "react-router-dom";
+import { useVerify } from "../AuthProvider.js";
 
-const Signin = () => {
+const Verify = () => {
   const navigate = useNavigate();
+  const { setVerifiedStatus } = useVerify();
   const { isError, isLoading, mutateAsync, error } = useMutation(
-    "auth",
-    (credentials) => login(credentials)
+    "verify",
+    async (credentials) => await verify(credentials)
   );
 
   const onFinish = async (values) => {
     try {
-      await mutateAsync({
-        username: values.username,
-        password: values.password,
+      const token = await mutateAsync({
+        token: values.token,
       });
 
-      navigate("/verify-2fa");
+      setVerifiedStatus(token);
+
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -56,25 +59,12 @@ const Signin = () => {
         autoComplete="off"
       >
         <Form.Item
-          label="Kullanıcı"
-          name="username"
+          label="Doğrulama kodu:"
+          name="token"
           rules={[
             {
               required: true,
-              message: "Kullanıcı adını giriniz.",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Şifre"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Şifreyi giriniz.",
+              message: "Doğrulama kodunu giriniz.",
             },
           ]}
         >
@@ -94,7 +84,7 @@ const Signin = () => {
             style={{ height: 40, marginTop: 10 }}
             loading={isLoading}
           >
-            Giriş Yap
+            Doğrula
           </Button>
         </Form.Item>
       </Form>
@@ -102,4 +92,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Verify;

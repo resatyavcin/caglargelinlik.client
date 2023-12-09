@@ -6,7 +6,7 @@ import { createCustomer } from "../api.js";
 const CustomerAdd = ({ onCancel }) => {
   const { isError, isLoading, mutateAsync, error } = useMutation(
     "createProduct",
-    (props) => createCustomer(props)
+    async (props) => await createCustomer(props)
   );
 
   const queryClient = new useQueryClient();
@@ -23,17 +23,20 @@ const CustomerAdd = ({ onCancel }) => {
     console.log("Failed:", errorInfo);
   };
 
+  if (isError) {
+    return (
+      <Alert
+        style={{ marginBottom: 30 }}
+        message="Hata"
+        description={error.response.data.message}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
   return (
     <div style={{ marginTop: 30 }}>
-      {isError && (
-        <Alert
-          style={{ marginBottom: 30 }}
-          message="Hata"
-          description={error.response.data.message}
-          type="error"
-          showIcon
-        />
-      )}
       <Form
         name="basic"
         style={{

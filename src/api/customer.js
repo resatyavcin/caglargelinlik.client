@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080";
+let API_URL = undefined;
+if (process.env.NODE_ENV === "development") API_URL = "http://localhost:8080";
+
+if (process.env.NODE_ENV === "production")
+  API_URL = process.env.REACT_APP_MY_API_KEY;
 
 const createCustomer = async ({
   firstName,

@@ -1,13 +1,10 @@
 import axios from "axios";
 
-let API_URL;
+let API_URL = undefined;
 if (process.env.NODE_ENV === "development") API_URL = "http://localhost:8080";
 
 if (process.env.NODE_ENV === "production")
   API_URL = process.env.REACT_APP_MY_API_KEY;
-
-console.log(process.env.NODE_ENV);
-console.log(API_URL);
 
 const login = async ({ username, password }) => {
   try {

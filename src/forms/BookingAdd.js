@@ -9,7 +9,7 @@ import {
   Input,
   InputNumber,
 } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import { createBooking, getProductNames } from "../api.js";
 import { useEffect, useState } from "react";
@@ -19,13 +19,13 @@ const BookingAdd = () => {
   const [productNameSelectDataState, setProductNameSelectDataState] = useState(
     []
   );
-
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+  const [isSell, setIsSell] = useState(false);
   const location = useLocation();
 
-  const { isError, isLoading, mutateAsync, error } = useMutation(
-    "createBooking",
-    async (props) => await createBooking(props)
-  );
+  const { isError, isLoading, mutateAsync, error, isSuccess, data } =
+    useMutation("createBooking", async (props) => await createBooking(props));
 
   const { data: productNameSelectData, refetch: productNameSelectRefetch } =
     useQuery(
@@ -45,16 +45,17 @@ const BookingAdd = () => {
   }, [productCode, productNameSelectRefetch]);
 
   const onFinish = async (values) => {
-    console.log(values);
     try {
       await mutateAsync({
         ...values,
         customer: location?.state,
         eventType: productCode,
-        productTakeType: "rent",
-        isPackage: false,
-        isSell: false,
+        productTakeType: values.isSell ? "sell" : "rent",
       });
+      form.resetFields();
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
@@ -85,6 +86,16 @@ const BookingAdd = () => {
           showIcon
         />
       )}
+
+      {isSuccess && (
+        <Alert
+          style={{ marginBottom: 30 }}
+          message="Başarılı İşlem"
+          description={data?.message}
+          type="success"
+          showIcon
+        />
+      )}
       <Segmented
         style={{ marginBottom: 20 }}
         size="large"
@@ -101,17 +112,28 @@ const BookingAdd = () => {
 
       <Form
         name="basic"
+        form={form}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
         labelCol={{ span: 4 }}
       >
-        <Form.Item label="Paket Mi?" valuePropName="isPackage">
+        <Form.Item
+          label="Paket Mi?"
+          name="isPackage"
+          valuePropName="checked"
+          initialValue={true}
+        >
           <Checkbox />
         </Form.Item>
 
-        <Form.Item label="Satılık Mı?" valuePropName="isSell">
-          <Checkbox />
+        <Form.Item
+          label="Satılık Mı?"
+          name="isSell"
+          valuePropName="checked"
+          initialValue={isSell}
+        >
+          <Checkbox onChange={(e) => setIsSell(e.target.checked)} />
         </Form.Item>
 
         <Form.Item
@@ -184,31 +206,50 @@ const BookingAdd = () => {
           />
         </Form.Item>
 
-        <Form.Item
-          label="Ürün Gidişi"
-          name="productDeliveryDate"
-          rules={[
-            {
-              required: true,
-              message: "Ürünü müşteriye veriş tarihini giriniz.",
-            },
-          ]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+        {!isSell && (
+          <>
+            <Form.Item
+              label="Ürün Gidişi"
+              name="productDeliveryDate"
+              rules={[
+                {
+                  required: true,
+                  message: "Ürünü müşteriye veriş tarihini giriniz.",
+                },
+              ]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
 
-        <Form.Item
-          label="Ürün Gelişi"
-          name="productReturnDate"
-          rules={[
-            {
-              required: true,
-              message: "Dönüş tarihini giriniz.",
-            },
-          ]}
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
+            <Form.Item
+              label="Ürün Gelişi"
+              name="productReturnDate"
+              rules={[
+                {
+                  required: true,
+                  message: "Dönüş tarihini giriniz.",
+                },
+              ]}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </>
+        )}
+
+        {isSell && (
+          <Form.Item
+            label="Satış Tarihi"
+            name="soldDate"
+            rules={[
+              {
+                required: true,
+                message: "Satış tarihini giriniz.",
+              },
+            ]}
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+        )}
 
         <Form.Item label="Notlarım" name="note">
           <Input.TextArea />

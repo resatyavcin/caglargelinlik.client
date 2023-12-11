@@ -1,5 +1,5 @@
 import { Tag, Button } from "antd";
-import { DollarTwoTone } from "@ant-design/icons";
+import { DollarTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 function formatDate(date) {
@@ -53,7 +53,7 @@ export const columns = ({ openModal, handleSetBooking, isExistPay }) => [
     key: 10,
     title: "Ödeme",
     dataIndex: "payment",
-    render: (_, { extrauuid, _id }) => (
+    render: (_, { extrauuid }) => (
       <>
         {isExistPay?.data.find((item) => item?.booking === extrauuid) ? (
           <Button
@@ -70,5 +70,13 @@ export const columns = ({ openModal, handleSetBooking, isExistPay }) => [
         )}
       </>
     ),
+  },
+  {
+    key: 499,
+    title: "Randevuyu Sil",
+    dataIndex: "delete",
+    render: (_) => {
+      return <Button type="text" icon={<DeleteTwoTone />} size={"middle"} />;
+    },
   },
 ];

@@ -41,7 +41,7 @@ const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
     <Drawer
       title="Müşteri Detayı"
       placement={"right"}
-      width={600}
+      width={700}
       onClose={closeDrawer}
       open={isOpen}
       extra={

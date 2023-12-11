@@ -17,7 +17,7 @@ const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
     return await getCustomers({ customerId: location?.state });
   });
 
-  const { data: allBookingsData } = useQuery("allBookings", async () => {
+  const { data: allBookingsData } = useQuery(["allBookings"], async () => {
     return await findBookings({ customerId: location?.state });
   });
 

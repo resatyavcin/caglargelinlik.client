@@ -15,7 +15,7 @@ const login = async ({ username, password }) => {
 
     localStorage.setItem("token", response?.data?.result?.token);
 
-    return response.data;
+    return response?.data;
   } catch (error) {
     throw error;
   }
@@ -27,7 +27,7 @@ const verify = async ({ token }) => {
       token,
     });
 
-    return response.data;
+    return response?.data;
   } catch (error) {
     throw error;
   }
@@ -39,7 +39,7 @@ const register = async ({ username, password, admin }) => {
     password,
     admin,
   });
-  return response.data;
+  return response?.data;
 };
 
 const logout = async () => {

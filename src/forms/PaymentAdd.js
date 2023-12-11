@@ -1,9 +1,11 @@
 import { Button, Form, Alert, Input, InputNumber } from "antd";
 
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { createPayment } from "../api";
 
 const PaymentAdd = ({ booking, onCancel, messageApi }) => {
+  const queryClient = new useQueryClient();
+
   const {
     isError: isErrorCreatePayment,
     isLoading: isLoadingCreatePayment,
@@ -16,8 +18,15 @@ const PaymentAdd = ({ booking, onCancel, messageApi }) => {
       onError: (err) => {
         console.log(err);
       },
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         messageApi.success(data?.message);
+
+        await queryClient.refetchQueries({
+          queryKey: ["customers"],
+        });
+        await queryClient.refetchQueries({
+          queryKey: ["allBookings"],
+        });
       },
     }
   );

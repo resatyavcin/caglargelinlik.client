@@ -52,6 +52,20 @@ const getProductNames = async ({ type }) => {
   return response.data.result;
 };
 
+const getProductCodes = async ({ type, name }) => {
+  const response = await axios.get(
+    `${API_URL}/v1/product/getProductSpecialCodes/${type}?productName=${name}`,
+    {
+      headers: {
+        "x-auth-token": localStorage.getItem("token"),
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response.data.result;
+};
+
 const createProduct = async ({ code, name, isSecondHand, specialCode }) => {
   const response = await axios.post(
     `${API_URL}/v1/product/createProduct`,
@@ -143,4 +157,5 @@ export {
   deleteProduct,
   receivingProduct,
   receivingProductCancel,
+  getProductCodes,
 };

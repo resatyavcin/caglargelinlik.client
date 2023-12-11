@@ -20,7 +20,8 @@ const Verify = () => {
         token: values.token,
       });
 
-      setVerifiedStatus(token);
+      setVerifiedStatus(token.data);
+      localStorage.setItem("verifyToken", token.data);
 
       navigate("/");
     } catch (error) {

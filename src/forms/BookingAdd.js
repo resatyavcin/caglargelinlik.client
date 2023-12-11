@@ -10,8 +10,8 @@ import {
   InputNumber,
 } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "react-query";
-import { createBooking, getProductNames } from "../api";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { createBooking, getProductCodes, getProductNames } from "../api";
 import { useEffect, useState } from "react";
 
 const BookingAdd = () => {
@@ -19,6 +19,10 @@ const BookingAdd = () => {
   const [productNameSelectDataState, setProductNameSelectDataState] = useState(
     []
   );
+
+  const [productCodesSelectDataState, setProductCodesSelectDataState] =
+    useState([]);
+
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [isSell, setIsSell] = useState(false);
@@ -27,22 +31,29 @@ const BookingAdd = () => {
   const { isError, isLoading, mutateAsync, error, isSuccess, data } =
     useMutation("createBooking", async (props) => await createBooking(props));
 
-  const { data: productNameSelectData, refetch: productNameSelectRefetch } =
-    useQuery(
-      ["productNames"],
-      () => {
-        return getProductNames({ type: productCode });
+  const { refetch: productNameSelectRefetch } = useQuery(
+    ["productNames"],
+    () => {
+      return getProductNames({ type: productCode });
+    },
+    {
+      onSuccess: async (data) => {
+        setProductNameSelectDataState(data);
       },
-      {
-        onSuccess: (data) => {
-          setProductNameSelectDataState(data);
-        },
-      }
-    );
-
+    }
+  );
   useEffect(() => {
     productNameSelectRefetch();
   }, [productCode, productNameSelectRefetch]);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [form, productCode]);
+
+  const onselect = async (data) => {
+    const list = await getProductCodes({ type: productCode, name: data });
+    setProductCodesSelectDataState(list);
+  };
 
   const onFinish = async (values) => {
     try {
@@ -63,10 +74,6 @@ const BookingAdd = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
-  };
-
-  const onSelect = (data) => {
-    console.log("onSelect", data);
   };
 
   const PRODUCT_CODE = Object.freeze({
@@ -147,8 +154,8 @@ const BookingAdd = () => {
           ]}
         >
           <Select
-            onChange={onSelect}
-            options={productNameSelectData?.map((value) => ({ value }))}
+            onSelect={onselect}
+            options={productNameSelectDataState?.map((value) => ({ value }))}
           />
         </Form.Item>
 
@@ -162,7 +169,10 @@ const BookingAdd = () => {
             },
           ]}
         >
-          <Input />
+          <Select
+            disabled={productCodesSelectDataState.length === 0}
+            options={productCodesSelectDataState?.map((value) => ({ value }))}
+          />
         </Form.Item>
 
         <Form.Item

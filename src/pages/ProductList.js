@@ -186,6 +186,7 @@ const ProductList = () => {
 
       <Flex gap={25} justify="space-between">
         <Table
+          rowKey={"_id"}
           style={{ flex: 1 }}
           loading={isLoading}
           columns={columns(navigate, showDrawer)}

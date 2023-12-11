@@ -1,21 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Button, Drawer, Space, Table, Typography } from "antd";
+import { Button, Drawer, Space, Table, Typography, message } from "antd";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { getCustomers } from "../api.js";
-const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
+import { findBookings, getCustomers } from "../api.js";
+import { columns } from "../pages/columns/bookingColumn.js";
+import PaymentAddModal from "./PaymentAddModal.js";
+const CustomerDetailDrawer = ({
+  isOpen,
+  closeDrawer,
+  isExistPaymentCostumer,
+}) => {
   const location = useLocation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [booking, setBooking] = useState(false);
+  const [isExistPaymentState, setIsExistPaymentState] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { data } = useQuery("customerOne", async () => {
     return await getCustomers({ customerId: location?.state });
   });
 
+  const { data: allBookingsData } = useQuery("allBookings", async () => {
+    return await findBookings({ customerId: location?.state });
+  });
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleSetBooking = (id) => {
+    setBooking(id);
+  };
+
+  const isExistPayment = (remaining) => {
+    setIsExistPaymentState(remaining === 0);
+  };
+
   return (
     <Drawer
       title="Müşteri Detayı"
       placement={"right"}
-      width={500}
+      width={600}
       onClose={closeDrawer}
       open={isOpen}
       extra={
@@ -36,10 +62,21 @@ const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
       <Typography.Text>{data?.[0]?.secondaryPhone}</Typography.Text> <br />
       <Typography.Text strong>Adres: </Typography.Text>
       <Typography.Text>{data?.[0]?.address}</Typography.Text>
+      {isModalOpen && (
+        <PaymentAddModal
+          isOpen={isModalOpen}
+          closeModel={() => setIsModalOpen(false)}
+          messageApi={messageApi}
+          booking={booking}
+          isExistPayment={isExistPayment}
+        />
+      )}
+      {contextHolder}
       <Table
-        style={{ flex: 1 }}
-        // columns={columns(navigate, showDrawer)}
-        // dataSource={data?.[0]?.rentHistory}
+        style={{ flex: 1, marginTop: 20 }}
+        columns={columns({ openModal, handleSetBooking, isExistPaymentState })}
+        dataSource={allBookingsData}
+        rowKey={"_id"}
         size="small"
         pagination={false}
       />

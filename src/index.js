@@ -11,13 +11,14 @@ import dayjs from "dayjs";
 import ProductList from "./pages/ProductList";
 import CustomerList from "./pages/CustomerList";
 import Signin from "./pages/Signin";
+import Verify from "./pages/Verify";
+import Booking from "./pages/Booking";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "dayjs/locale/tr";
 import "./index.css";
 import trTR from "antd/locale/tr_TR";
 import { AuthProvider } from "./AuthProvider";
-import Verify from "./pages/Verify";
 
 dayjs.locale("tr");
 
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "/product-list",
     element: <ProductList />,
+  },
+  {
+    path: "/booking",
+    element: <Booking />,
   },
 ]);
 

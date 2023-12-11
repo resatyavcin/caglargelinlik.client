@@ -1,7 +1,11 @@
-import { Button } from "antd";
-import { PaperClipOutlined } from "@ant-design/icons";
+import { Button, Tag } from "antd";
+import { ContactsTwoTone, FireTwoTone } from "@ant-design/icons";
 
-export const columns = (navigate, showCalendarDrawer) => [
+export const columns = (
+  navigate,
+  showCalendarDrawer,
+  isExistPaymentCostumer
+) => [
   {
     key: 1,
     title: "Adı",
@@ -30,15 +34,26 @@ export const columns = (navigate, showCalendarDrawer) => [
     title: "Detay",
     dataIndex: "details",
     render: (_, { _id }) => (
-      <Button
-        type="text"
-        icon={<PaperClipOutlined />}
-        size={"middle"}
-        onClick={() => {
-          showCalendarDrawer();
-          navigate(_, { state: _id });
-        }}
-      />
+      <>
+        <Button
+          type="text"
+          icon={<ContactsTwoTone />}
+          size={"middle"}
+          onClick={() => {
+            showCalendarDrawer();
+            navigate(_, { state: _id });
+          }}
+        />
+
+        <Button
+          type="text"
+          icon={<FireTwoTone />}
+          size={"middle"}
+          onClick={() => {
+            navigate("/booking", { state: _id });
+          }}
+        />
+      </>
     ),
   },
 ];

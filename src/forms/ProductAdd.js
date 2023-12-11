@@ -72,7 +72,7 @@ const ProductAdd = ({ productCode, onCancel, messageApi }) => {
           <AutoComplete
             style={{ width: 200 }}
             onSelect={onSelect}
-            options={data.map((value) => ({ value }))}
+            options={data?.map((value) => ({ value }))}
             filterOption={(inputValue, option) =>
               option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
               -1

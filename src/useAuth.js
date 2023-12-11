@@ -12,7 +12,7 @@ const useAuth = () => {
       if (!token || !isValidToken(token)) {
         navigate("/signin");
       } else if (!is2FAVerified) {
-        navigate("/verify-2fa");
+        // navigate("/verify-2fa");
       }
     };
 

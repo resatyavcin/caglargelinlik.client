@@ -3,6 +3,11 @@ import { CalendarTwoTone } from "@ant-design/icons";
 
 export const columns = (navigate, showCalendarDrawer) => [
   {
+    key: 14,
+    title: "Ürün Özel Kodu",
+    dataIndex: "specialCode",
+  },
+  {
     key: 1,
     title: "Ürün Adı",
     dataIndex: "name",

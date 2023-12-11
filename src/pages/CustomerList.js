@@ -13,7 +13,7 @@ const CostumerList = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
   const { data, isLoading, error, isError } = useQuery(
-    "customers",
+    ["customers"],
     () => {
       return getCustomers({ customerId: undefined });
     },
@@ -51,6 +51,10 @@ const CostumerList = () => {
     }
   }
 
+  const isExistPaymentCostumer = (remainingState) => {
+    return remainingState || false;
+  };
+
   return (
     <MainCore>
       <Flex justify="space-between" align="center" style={{ marginBottom: 10 }}>
@@ -61,8 +65,9 @@ const CostumerList = () => {
         </Button>
       </Flex>
       <Table
+        rowKey={"_id"}
         loading={isLoading}
-        columns={columns(navigate, showDrawer)}
+        columns={columns(navigate, showDrawer, isExistPaymentCostumer)}
         dataSource={data}
         size="small"
         pagination={{ defaultPageSize: 5 }}
@@ -71,7 +76,11 @@ const CostumerList = () => {
         <CustomerAddModel isOpen={isModalOpen} closeModel={closeModal} />
       )}
       {isOpenDrawer && (
-        <CustomerDetailDrawer isOpen={isOpenDrawer} closeDrawer={closeDrawer} />
+        <CustomerDetailDrawer
+          isOpen={isOpenDrawer}
+          closeDrawer={closeDrawer}
+          isExistPaymentCostumer={isExistPaymentCostumer}
+        />
       )}
     </MainCore>
   );

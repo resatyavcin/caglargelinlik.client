@@ -186,6 +186,7 @@ const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
         />
         <div style={{ flex: 1, marginTop: 20 }}>
           <Table
+            rowKey={"_id"}
             loading={isLoading}
             columns={columns({
               mutation: receivingProductMutation,

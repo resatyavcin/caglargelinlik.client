@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
-console.log(process.env.NODE_ENV);
+
 const login = async ({ username, password }) => {
   try {
     const response = await axios.post(`${API_URL}/v1/auth/login`, {

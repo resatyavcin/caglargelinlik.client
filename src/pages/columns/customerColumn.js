@@ -1,11 +1,7 @@
 import { Button, Tag } from "antd";
 import { ContactsTwoTone, FireTwoTone } from "@ant-design/icons";
 
-export const columns = (
-  navigate,
-  showCalendarDrawer,
-  isExistPaymentCostumer
-) => [
+export const columns = (navigate, showCalendarDrawer) => [
   {
     key: 1,
     title: "Adı",
@@ -30,9 +26,38 @@ export const columns = (
     dataIndex: "address",
   },
   {
+    key: 4,
+    title: "Ödeme Durumu",
+    dataIndex: "paymentStatus",
+    filters: [
+      {
+        text: "Ödeme Yapmayanlar",
+        value: true,
+      },
+      {
+        text: "Ödeme Tamamlayanlar",
+        value: false,
+      },
+    ],
+    onFilter: (value, record) =>
+      (record?.paymentId?.filter((item) => item.remainingAmount !== 0)).length >
+        0 ===
+      value,
+    render: (_, { paymentId }) => (
+      <>
+        {paymentId?.filter((item) => item.remainingAmount !== 0).length > 0 ? (
+          <Tag color="red">Tamamlanmadı</Tag>
+        ) : (
+          <Tag color="green">Tamamlandı</Tag>
+        )}
+      </>
+    ),
+  },
+  {
     key: 5,
     title: "Detay",
     dataIndex: "details",
+
     render: (_, { _id }) => (
       <>
         <Button

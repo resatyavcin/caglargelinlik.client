@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { Button, Drawer, Space, Table, Typography, message } from "antd";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { findBookings, getCustomers } from "../api.js";
+import { findBookings, getCustomers, isExistPayFromCus } from "../api.js";
 import { columns } from "../pages/columns/bookingColumn.js";
 import PaymentAddModal from "./PaymentAddModal.js";
-const CustomerDetailDrawer = ({
-  isOpen,
-  closeDrawer,
-  isExistPaymentCostumer,
-}) => {
+const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [booking, setBooking] = useState(false);
@@ -23,6 +19,10 @@ const CustomerDetailDrawer = ({
 
   const { data: allBookingsData } = useQuery("allBookings", async () => {
     return await findBookings({ customerId: location?.state });
+  });
+
+  const { data: isExistPay } = useQuery("isExistPay", async () => {
+    return await isExistPayFromCus({ customerId: location?.state });
   });
 
   const openModal = () => {
@@ -74,7 +74,7 @@ const CustomerDetailDrawer = ({
       {contextHolder}
       <Table
         style={{ flex: 1, marginTop: 20 }}
-        columns={columns({ openModal, handleSetBooking, isExistPaymentState })}
+        columns={columns({ openModal, handleSetBooking, isExistPay })}
         dataSource={allBookingsData}
         rowKey={"_id"}
         size="small"

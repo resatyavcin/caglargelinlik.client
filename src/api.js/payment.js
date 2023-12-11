@@ -39,4 +39,22 @@ const getAllPayments = async ({ booking }) => {
   }
 };
 
-export { getAllPayments, createPayment };
+const isExistPayFromCus = async ({ customerId }) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/v1/payments/customerPay/${customerId}`,
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getAllPayments, createPayment, isExistPayFromCus };

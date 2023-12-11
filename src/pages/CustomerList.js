@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomerAddModel from "../components/CustomerAddModel";
-import { Table, Button, Flex, Typography, Result } from "antd";
+import { Table, Button, Flex, Typography, Result, Input } from "antd";
 import { getCustomers } from "../api.js";
 import { useQuery } from "react-query";
 import { columns } from "./columns/customerColumn";
@@ -12,6 +12,9 @@ const CostumerList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTxt, setSearchTxt] = useState("");
+
   const { data, isLoading, error, isError } = useQuery(
     ["customers"],
     () => {
@@ -19,6 +22,20 @@ const CostumerList = () => {
     },
     { retry: 2, refetchOnWindowFocus: false }
   );
+
+  useEffect(() => {
+    setFilteredData(
+      data?.filter((col) => {
+        return searchTxt.length > 0
+          ? col?.firstName?.toLowerCase().includes(searchTxt) ||
+              col?.lastName?.toLowerCase().includes(searchTxt) ||
+              col?.address?.toLowerCase().includes(searchTxt) ||
+              col?.primaryPhone?.toLowerCase().includes(searchTxt) ||
+              col?.secondaryPhone?.toLowerCase().includes(searchTxt)
+          : true;
+      })
+    );
+  }, [data, searchTxt]);
 
   const navigate = useNavigate();
 
@@ -51,10 +68,6 @@ const CostumerList = () => {
     }
   }
 
-  const isExistPaymentCostumer = (remainingState) => {
-    return remainingState || false;
-  };
-
   return (
     <MainCore>
       <Flex justify="space-between" align="center" style={{ marginBottom: 10 }}>
@@ -64,11 +77,17 @@ const CostumerList = () => {
           Müşteri Ekle
         </Button>
       </Flex>
+
+      <Input
+        onChange={(e) => setSearchTxt(e.target.value)}
+        placeholder="Ad, soyad,adres, telefon arayın..."
+        style={{ marginBottom: 10 }}
+      />
       <Table
         rowKey={"_id"}
         loading={isLoading}
-        columns={columns(navigate, showDrawer, isExistPaymentCostumer)}
-        dataSource={data}
+        columns={columns(navigate, showDrawer)}
+        dataSource={filteredData}
         size="small"
         pagination={{ defaultPageSize: 5 }}
       />
@@ -76,11 +95,7 @@ const CostumerList = () => {
         <CustomerAddModel isOpen={isModalOpen} closeModel={closeModal} />
       )}
       {isOpenDrawer && (
-        <CustomerDetailDrawer
-          isOpen={isOpenDrawer}
-          closeDrawer={closeDrawer}
-          isExistPaymentCostumer={isExistPaymentCostumer}
-        />
+        <CustomerDetailDrawer isOpen={isOpenDrawer} closeDrawer={closeDrawer} />
       )}
     </MainCore>
   );

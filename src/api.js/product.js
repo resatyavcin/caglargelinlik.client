@@ -48,10 +48,10 @@ const getProductNames = async ({ type }) => {
   return response.data.result;
 };
 
-const createProduct = async ({ code, name, isSecondHand }) => {
+const createProduct = async ({ code, name, isSecondHand, specialCode }) => {
   const response = await axios.post(
     `${API_URL}/v1/product/createProduct`,
-    { code, name, isSecondHand },
+    { code, name, isSecondHand, specialCode },
     {
       headers: {
         "x-auth-token": localStorage.getItem("token"),

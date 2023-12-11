@@ -1,4 +1,4 @@
-import { Button, Form, AutoComplete, Alert, Checkbox } from "antd";
+import { Button, Form, AutoComplete, Alert, Checkbox, Input } from "antd";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { createProduct } from "../api.js";
@@ -20,15 +20,19 @@ const ProductAdd = ({ productCode, onCancel, messageApi }) => {
   const queryClient = new useQueryClient();
 
   const onFinish = async (values) => {
-    await mutateAsync({ ...values, code: productCode });
-    await queryClient.refetchQueries({
-      queryKey: ["products"],
-    });
-    await queryClient.refetchQueries({
-      queryKey: ["productNames"],
-    });
+    try {
+      await mutateAsync({ ...values, code: productCode });
+      await queryClient.refetchQueries({
+        queryKey: ["products"],
+      });
+      await queryClient.refetchQueries({
+        queryKey: ["productNames"],
+      });
 
-    onCancel();
+      onCancel();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -94,6 +98,19 @@ const ProductAdd = ({ productCode, onCancel, messageApi }) => {
           ]}
         >
           <Checkbox />
+        </Form.Item>
+
+        <Form.Item
+          label="Özel Kod"
+          name="specialCode"
+          rules={[
+            {
+              required: true,
+              message: "Zorunlu alan.",
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
 
         <Form.Item>

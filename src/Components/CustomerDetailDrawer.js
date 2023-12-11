@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { Button, Drawer, Space, Table, Typography, message } from "antd";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { findBookings, getCustomers, isExistPayFromCus } from "../api.js";
-import { columns } from "../pages/columns/bookingColumn.js";
-import PaymentAddModal from "./PaymentAddModal.js";
+import { findBookings, getCustomers, isExistPayFromCus } from "../api";
+import { columns } from "../pages/columns/bookingColumn";
+import PaymentAddModal from "./PaymentAddModal";
 const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);

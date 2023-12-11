@@ -2,8 +2,8 @@ import React from "react";
 import { Button, Card, Typography, Flex } from "antd";
 
 import { Link } from "react-router-dom";
-import { logout } from "./api.js";
-import useAuth from "./useAuth.js";
+import { logout } from "./api";
+import useAuth from "./useAuth";
 
 const MainCore = ({ children }) => {
   const isAuth = useAuth();

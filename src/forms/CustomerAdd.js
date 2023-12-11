@@ -1,7 +1,7 @@
 import { Button, Form, Alert, Input } from "antd";
 
 import { useMutation, useQueryClient } from "react-query";
-import { createCustomer } from "../api.js";
+import { createCustomer } from "../api";
 
 const CustomerAdd = ({ onCancel }) => {
   const { isError, isLoading, mutateAsync, error } = useMutation(

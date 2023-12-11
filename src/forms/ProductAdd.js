@@ -1,7 +1,7 @@
 import { Button, Form, AutoComplete, Alert, Checkbox, Input } from "antd";
 
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { createProduct } from "../api.js";
+import { createProduct } from "../api";
 
 const ProductAdd = ({ productCode, onCancel, messageApi }) => {
   const { data } = useQuery("productNames");

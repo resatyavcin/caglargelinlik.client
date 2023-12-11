@@ -1,7 +1,7 @@
 import { Button, Form, Alert, Input, InputNumber } from "antd";
 
 import { useMutation } from "react-query";
-import { createPayment } from "../api.js";
+import { createPayment } from "../api";
 
 const PaymentAdd = ({ booking, onCancel, messageApi }) => {
   const {

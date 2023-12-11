@@ -11,11 +11,11 @@ import {
   message,
 } from "antd";
 import { useQuery } from "react-query";
-import { getProduct, getProductNames } from "../api.js";
-import ProductAvailableDrawer from "../components/ProductAvailableDrawer.js";
-import ProductAddModel from "../components/ProductAddModel.js";
-import MainCore from "../MainCore.js";
-import { columns } from "./columns/productColumn.js";
+import { getProduct, getProductNames } from "../api";
+import ProductAvailableDrawer from "../components/ProductAvailableDrawer";
+import ProductAddModel from "../components/ProductAddModel";
+import MainCore from "../MainCore";
+import { columns } from "./columns/productColumn";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 

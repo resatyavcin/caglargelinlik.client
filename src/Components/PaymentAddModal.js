@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Modal, Timeline, Typography, Tag } from "antd";
 import PaymentAdd from "../forms/PaymentAdd";
-import { getAllPayments } from "../api.js";
+import { getAllPayments } from "../api";
 import { useQuery } from "react-query";
 const PaymentAddModal = ({
   isOpen,

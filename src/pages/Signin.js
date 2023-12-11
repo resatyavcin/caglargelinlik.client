@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Form, Input, Alert } from "antd";
 
 import { useMutation } from "react-query";
-import { login } from "../api.js";
+import { login } from "../api";
 import { useNavigate } from "react-router-dom";
 
 const Signin = () => {

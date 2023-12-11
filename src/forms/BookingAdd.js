@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
-import { createBooking, getProductNames } from "../api.js";
+import { createBooking, getProductNames } from "../api";
 import { useEffect, useState } from "react";
 
 const BookingAdd = () => {

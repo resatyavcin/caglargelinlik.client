@@ -2,9 +2,9 @@ import React from "react";
 import { Button, Form, Input, Alert } from "antd";
 
 import { useMutation } from "react-query";
-import { verify } from "../api.js";
+import { verify } from "../api";
 import { useNavigate } from "react-router-dom";
-import { useVerify } from "../AuthProvider.js";
+import { useVerify } from "../AuthProvider";
 
 const Verify = () => {
   const navigate = useNavigate();

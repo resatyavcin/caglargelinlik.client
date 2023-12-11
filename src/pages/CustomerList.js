@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CustomerAddModel from "../components/CustomerAddModel";
 import { Table, Button, Flex, Typography, Result, Input } from "antd";
-import { getCustomers } from "../api.js";
+import { getCustomers } from "../api";
 import { useQuery } from "react-query";
 import { columns } from "./columns/customerColumn";
 import CustomerDetailDrawer from "../components/CustomerDetailDrawer";

@@ -6,12 +6,12 @@ import {
   getProductOne,
   receivingProduct,
   receivingProductCancel,
-} from "../api.js";
+} from "../api";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useLocation } from "react-router-dom";
-import { columns } from "../pages/columns/rentHistoryColumn.js";
+import { columns } from "../pages/columns/rentHistoryColumn";
 import dayjs from "dayjs";
-import AreYouSureModal from "./AreYouSureModal.js";
+import AreYouSureModal from "./AreYouSureModal";
 const ProductAvailableDrawer = ({ isOpen, closeDrawer }) => {
   const [areYouSureDelete, setAreYouSureDelete] = useState(false);
   const [receiveFn, setReceiveFn] = useState();

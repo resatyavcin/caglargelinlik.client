@@ -23,8 +23,12 @@ const MainCore = ({ children }) => {
                 <Link to={"/"}>Müşteri Listesi</Link>
                 <Link to={"/product-list"}> Ürün Listesi</Link>
                 <Link to={"/calendar"}> Genel Takvim</Link>
-                <Link to={"/admin"} state={{ isAdmin: jwtDecode(token).role }}>
-                  {" "}
+                <Link
+                  to={"/admin"}
+                  state={{
+                    isAdmin: token === null ? false : jwtDecode(token)?.role,
+                  }}
+                >
                   Yönetim Paneli
                 </Link>
               </Flex>

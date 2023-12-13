@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { Button, Drawer, Space, Calendar, Table, Flex, message } from "antd";
 import {
+  deleteBooking,
   deleteProduct,
   getProductOne,
   receivingProduct,

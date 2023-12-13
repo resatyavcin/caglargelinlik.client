@@ -4,9 +4,13 @@ import { Button, Card, Typography, Flex } from "antd";
 import { Link } from "react-router-dom";
 import { logout } from "./api";
 import useAuth from "./useAuth";
+import { jwtDecode } from "jwt-decode";
 
 const MainCore = ({ children }) => {
   const isAuth = useAuth();
+
+  const token = localStorage.getItem("token");
+
   return (
     <div>
       {isAuth && (
@@ -19,6 +23,10 @@ const MainCore = ({ children }) => {
                 <Link to={"/"}>Müşteri Listesi</Link>
                 <Link to={"/product-list"}> Ürün Listesi</Link>
                 <Link to={"/calendar"}> Genel Takvim</Link>
+                <Link to={"/admin"} state={{ isAdmin: jwtDecode(token).role }}>
+                  {" "}
+                  Yönetim Paneli
+                </Link>
               </Flex>
 
               {

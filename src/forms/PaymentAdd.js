@@ -3,8 +3,9 @@ import { Button, Form, Alert, Input, InputNumber } from "antd";
 import { useMutation, useQueryClient } from "react-query";
 import { createPayment } from "../api";
 
-const PaymentAdd = ({ booking, onCancel, messageApi }) => {
+const PaymentAdd = ({ booking, onCancel, messageApi, editableData }) => {
   const queryClient = new useQueryClient();
+  const [form] = Form.useForm();
 
   const {
     isError: isErrorCreatePayment,
@@ -60,6 +61,7 @@ const PaymentAdd = ({ booking, onCancel, messageApi }) => {
         style={{
           maxWidth: 600,
         }}
+        form={form}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"

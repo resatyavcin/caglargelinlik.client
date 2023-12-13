@@ -12,7 +12,12 @@ const EVENT_CODE = Object.freeze({
   EG: "Nişan",
 });
 
-export const columns = ({ openModal, handleSetBooking, isExistPay }) => [
+export const columns = ({
+  openModal,
+  handleSetBooking,
+  isExistPay,
+  deleteBookingMutateAsync,
+}) => [
   {
     key: 1,
     title: "Tür",
@@ -66,7 +71,16 @@ export const columns = ({ openModal, handleSetBooking, isExistPay }) => [
             }}
           />
         ) : (
-          <Tag color="success">Tamamlandı</Tag>
+          <Button
+            type="primary"
+            size={"small"}
+            onClick={() => {
+              openModal();
+              handleSetBooking(extrauuid);
+            }}
+          >
+            Tamamlandı
+          </Button>
         )}
       </>
     ),
@@ -75,8 +89,17 @@ export const columns = ({ openModal, handleSetBooking, isExistPay }) => [
     key: 499,
     title: "Randevuyu Sil",
     dataIndex: "delete",
-    render: (_) => {
-      return <Button type="text" icon={<DeleteTwoTone />} size={"middle"} />;
+    render: (_, { extrauuid }) => {
+      return (
+        <Button
+          type="text"
+          icon={<DeleteTwoTone />}
+          size={"middle"}
+          onClick={async () => {
+            await deleteBookingMutateAsync(extrauuid);
+          }}
+        />
+      );
     },
   },
 ];

@@ -61,4 +61,48 @@ const isExistPayFromCus = async ({ customerId }) => {
   }
 };
 
-export { getAllPayments, createPayment, isExistPayFromCus };
+const deletePayment = async ({ payId, payItemId }) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/v1/payments/customerPay/${payId}/${payItemId}`,
+      {},
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getStatistic = async ({ startDate, endDate }) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/v1/payments/statistic`,
+      { startDate, endDate },
+      {
+        headers: {
+          "x-auth-token": localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  getAllPayments,
+  createPayment,
+  isExistPayFromCus,
+  deletePayment,
+  getStatistic,
+};

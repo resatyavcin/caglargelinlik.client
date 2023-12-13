@@ -11,7 +11,6 @@ const createBooking = async ({
   primaryTrialDate,
   secondaryTrialDate,
   isPackage,
-  packageDetails = {},
   eventDate,
   productDeliveryDate,
   productReturnDate,
@@ -63,4 +62,19 @@ const findBookings = async ({ customerId }) => {
   return response.data.result;
 };
 
-export { createBooking, findBookings };
+const deleteBooking = async ({ booking }) => {
+  const response = await axios.put(
+    `${API_URL}/v1/booking/cancelBooking/${booking}`,
+    {},
+    {
+      headers: {
+        "x-auth-token": localStorage.getItem("token"),
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response.data.result;
+};
+
+export { createBooking, findBookings, deleteBooking };

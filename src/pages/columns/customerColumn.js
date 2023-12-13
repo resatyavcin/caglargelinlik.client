@@ -43,15 +43,18 @@ export const columns = (navigate, showCalendarDrawer) => [
       (record?.paymentId?.filter((item) => item.remainingAmount !== 0)).length >
         0 ===
       value,
-    render: (_, { paymentId }) => (
-      <>
-        {paymentId?.filter((item) => item.remainingAmount !== 0).length > 0 ? (
-          <Tag color="red">Tamamlanmadı</Tag>
-        ) : (
-          <Tag color="green">Tamamlandı</Tag>
-        )}
-      </>
-    ),
+    render: (_, { paymentId }) => {
+      return (
+        <>
+          {paymentId?.filter((item) => item.remainingAmount !== 0).length >
+          0 ? (
+            <Tag color="red">Tamamlanmadı</Tag>
+          ) : (
+            <Tag color="green">Tamamlandı</Tag>
+          )}
+        </>
+      );
+    },
   },
   {
     key: 5,

@@ -2,8 +2,13 @@ import React, { useState } from "react";
 
 import { Button, Drawer, Space, Table, Typography, message } from "antd";
 import { useLocation } from "react-router-dom";
-import { useQuery } from "react-query";
-import { findBookings, getCustomers, isExistPayFromCus } from "../api";
+import { QueryClient, useMutation, useQuery } from "react-query";
+import {
+  deleteBooking,
+  findBookings,
+  getCustomers,
+  isExistPayFromCus,
+} from "../api";
 import { columns } from "../pages/columns/bookingColumn";
 import PaymentAddModal from "./PaymentAddModal";
 const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
@@ -13,17 +18,40 @@ const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
   const [isExistPaymentState, setIsExistPaymentState] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
+  const queryClient = new QueryClient();
   const { data } = useQuery("customerOne", async () => {
     return await getCustomers({ customerId: location?.state });
   });
 
-  const { data: allBookingsData } = useQuery(["allBookings"], async () => {
+  const { data: allBookingsData } = useQuery("allBookings", async () => {
     return await findBookings({ customerId: location?.state });
   });
 
   const { data: isExistPay } = useQuery("isExistPay", async () => {
     return await isExistPayFromCus({ customerId: location?.state });
   });
+
+  const { mutateAsync: deleteBookingMutateAsync } = useMutation(
+    "deleteBooking",
+    async (props) => await deleteBooking({ booking: props }),
+    {
+      onError: (error) => {
+        messageApi.open({
+          type: "error",
+          content: error?.response?.data?.message,
+        });
+      },
+      onSuccess: async (data) => {
+        await queryClient.refetchQueries({
+          queryKey: ["allBookings"],
+        });
+        messageApi.open({
+          type: "success",
+          content: data,
+        });
+      },
+    }
+  );
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -74,7 +102,12 @@ const CustomerDetailDrawer = ({ isOpen, closeDrawer }) => {
       {contextHolder}
       <Table
         style={{ flex: 1, marginTop: 20 }}
-        columns={columns({ openModal, handleSetBooking, isExistPay })}
+        columns={columns({
+          openModal,
+          handleSetBooking,
+          isExistPay,
+          deleteBookingMutateAsync,
+        })}
         dataSource={allBookingsData}
         rowKey={"_id"}
         size="small"

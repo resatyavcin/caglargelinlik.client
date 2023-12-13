@@ -20,6 +20,7 @@ import "./index.css";
 import trTR from "antd/locale/tr_TR";
 import { AuthProvider } from "./AuthProvider";
 import GeneralCalendar from "./pages/GeneralCalendar";
+import Admin from "./pages/Admin";
 
 dayjs.locale("tr");
 
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
   {
     path: "/calendar",
     element: <GeneralCalendar />,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
   },
 ]);
 

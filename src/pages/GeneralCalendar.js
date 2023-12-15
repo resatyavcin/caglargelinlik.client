@@ -19,12 +19,10 @@ const GeneralCalendar = () => {
   const [bookings, setBookings] = useState();
 
   const onDateSelect = (value, info) => {
-    if (info === "date") {
-      setSelectedDate(value);
-      const dateObjectArray = data?.[dayjs(value).format("YYYY-MM-DD")];
-      setBookings(dateObjectArray);
-      setIsModalVisible(true);
-    }
+    setSelectedDate(value);
+    const dateObjectArray = data?.[dayjs(value).format("YYYY-MM-DD")];
+    setBookings(dateObjectArray);
+    setIsModalVisible(true);
   };
 
   const handleOk = () => {

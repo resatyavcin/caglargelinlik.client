@@ -77,4 +77,15 @@ const deleteBooking = async ({ booking }) => {
   return response.data.result;
 };
 
-export { createBooking, findBookings, deleteBooking };
+const getCalendar = async () => {
+  const response = await axios.get(`${API_URL}/v1/booking/calendar`, {
+    headers: {
+      "x-auth-token": localStorage.getItem("token"),
+    },
+    withCredentials: true,
+  });
+
+  return response.data.result;
+};
+
+export { createBooking, findBookings, deleteBooking, getCalendar };

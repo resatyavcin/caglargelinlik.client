@@ -60,6 +60,9 @@ function findSameItem(arrays) {
   return commonCharacters;
 }
 
+const filterOption = (input, option) =>
+  (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+
 const ProductList = () => {
   const [productCode, setProductCode] = useState("WD");
   const [selectedProduct, setSelectedProduct] = useState();
@@ -174,9 +177,11 @@ const ProductList = () => {
         <Select
           value={selectedProduct}
           placeholder={"Model İsmi Seçiniz"}
+          showSearch
           style={{ width: 220, marginRight: 10, marginBottom: 20 }}
           onChange={handleChange}
           loading={productNameSelectIsLoading}
+          filterOption={filterOption}
           options={productNameSelectDataState?.map((item) => ({
             label: item,
             value: item,
